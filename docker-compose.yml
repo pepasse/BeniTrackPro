@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL avec TimescaleDB
+  postgres:
+    image: timescale/timescaledb:latest-pg14
+    container_name: benitrackpro-postgres
+    environment:
+      POSTGRES_USER: benitrack_user
+      POSTGRES_PASSWORD: secure_password_change_me
+      POSTGRES_DB: benitrackpro
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations
+    networks:
+      - benitrackpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U benitrack_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: benitrackpro-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - benitrackpro-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: benitrackpro-backend
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DATABASE_URL: postgresql://benitrack_user:secure_password_change_me@postgres:5432/benitrackpro
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your_jwt_secret_key_change_me
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - benitrackpro-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Frontend Web (Développement)
+  frontend-web:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile.dev
+    container_name: benitrackpro-frontend-web
+    environment:
+      REACT_APP_API_URL: http://localhost:5000
+      REACT_APP_MAPBOX_TOKEN: your_mapbox_token_here
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - benitrackpro-network
+    volumes:
+      - ./frontend-web:/app
+      - /app/node_modules
+    command: npm start
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  benitrackpro-network:
+    driver: bridge
