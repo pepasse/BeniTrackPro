@@ -1,40 +1,39 @@
-import { createConnection, Connection } from 'typeorm';
+import 'reflect-metadata';
+import { DataSource } from 'typeorm';
 import config from './config';
 import logger from './logger';
 
-let connection: Connection | null = null;
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  url: config.database.url,
+  synchronize: config.env === 'development',
+  logging: config.env === 'development',
+  entities: [__dirname + '/../entities/**/*.{ts,js}'],
+  migrations: [__dirname + '/../migrations/**/*.{ts,js}'],
+  subscribers: [__dirname + '/../subscribers/**/*.{ts,js}'],
+});
 
-export const initializeDatabase = async (): Promise<Connection> => {
+export const initializeDatabase = async (): Promise<DataSource> => {
   try {
-    connection = await createConnection({
-      type: 'postgres',
-      url: config.database.url,
-      synchronize: config.env === 'development',
-      logging: config.env === 'development',
-      entities: ['src/entities/**/*.ts'],
-      migrations: ['src/migrations/**/*.ts'],
-      subscribers: ['src/subscribers/**/*.ts'],
-    });
-
+    await AppDataSource.initialize();
     logger.info('Database connection established successfully');
-    return connection;
+    return AppDataSource;
   } catch (error) {
     logger.error('Failed to connect to database:', error);
     throw error;
   }
 };
 
-export const getConnection = (): Connection => {
-  if (!connection) {
+export const getConnection = (): DataSource => {
+  if (!AppDataSource.isInitialized) {
     throw new Error('Database connection not initialized');
   }
-  return connection;
+  return AppDataSource;
 };
 
 export const closeDatabase = async (): Promise<void> => {
-  if (connection) {
-    await connection.close();
-    connection = null;
+  if (AppDataSource.isInitialized) {
+    await AppDataSource.destroy();
     logger.info('Database connection closed');
   }
 };

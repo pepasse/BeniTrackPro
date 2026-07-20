@@ -14,6 +14,7 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
+    winston.format.splat(),
     winston.format.json()
   ),
   defaultMeta: { service: 'benitrackpro' },
@@ -36,10 +37,11 @@ if (config.env !== 'production') {
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.printf(
-          ({ level, message, timestamp }) =>
-            `${timestamp} [${level}]: ${message}`
-        )
+        winston.format.printf(({ level, message, timestamp, stack, ...meta }) => {
+          delete meta.service;
+          const extra = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
+          return `${timestamp} [${level}]: ${stack || message}${extra}`;
+        })
       ),
     })
   );

@@ -145,7 +145,12 @@ GET    /api/vehicles/:id/history  - Historique de trajet
 POST   /api/geofences             - Créer une zone
 GET    /api/fleet/stats           - Statistiques
 POST   /api/alerts                - Configuration d'alertes
-```
+GET    /api/vehicles
+POST   /api/vehicles
+GET    /api/vehicles/:id
+PUT    /api/vehicles/:id
+DELETE /api/vehicles/:id
+GET    /api/vehicles/:id/location
 
 ---
 

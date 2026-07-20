@@ -2,9 +2,9 @@ import Redis from 'ioredis';
 import config from './config';
 import logger from './logger';
 
-let redisClient: Redis.Redis | null = null;
+let redisClient: Redis | null = null;
 
-export const initializeRedis = (): Redis.Redis => {
+export const initializeRedis = (): Redis => {
   try {
     redisClient = new Redis(config.redis.url);
 
@@ -23,7 +23,7 @@ export const initializeRedis = (): Redis.Redis => {
   }
 };
 
-export const getRedisClient = (): Redis.Redis => {
+export const getRedisClient = (): Redis => {
   if (!redisClient) {
     throw new Error('Redis client not initialized');
   }
