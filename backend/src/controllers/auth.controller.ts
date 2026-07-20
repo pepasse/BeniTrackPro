@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { Request } from 'express';
 import { getConnection } from '../config/database';
 import { User } from '../entities/User';
-import { signAccessToken, signRefreshToken } from '../utils/jwt';
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { AuthRequest } from '../middleware/auth.middleware';
 import logger from '../config/logger';
 
@@ -98,6 +98,39 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     logger.error('Erreur lors de la connexion:', error);
     res.status(500).json({ message: 'Impossible de se connecter' });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { refreshToken: token } = req.body;
+
+    if (!token) {
+      res.status(400).json({ message: 'refreshToken est requis' });
+      return;
+    }
+
+    let payload;
+    try {
+      payload = verifyRefreshToken(token);
+    } catch (error) {
+      res.status(401).json({ message: 'Refresh token invalide ou expiré' });
+      return;
+    }
+
+    const user = await userRepository().findOneBy({ id: payload.userId });
+    if (!user || !user.isActive) {
+      res.status(401).json({ message: 'Utilisateur introuvable ou inactif' });
+      return;
+    }
+
+    const accessToken = signAccessToken({ userId: user.id, role: user.role });
+    const newRefreshToken = signRefreshToken({ userId: user.id, role: user.role });
+
+    res.status(200).json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    logger.error('Erreur lors du rafraîchissement du token:', error);
+    res.status(500).json({ message: 'Impossible de rafraîchir le token' });
   }
 };
 
