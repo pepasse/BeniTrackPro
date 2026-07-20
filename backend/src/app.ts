@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config, logger } from './config';
 import vehicleRoutes from './routes/vehicle.routes';
+import authRoutes from './routes/auth.routes';
 
 const app: Application = express();
 
@@ -45,8 +46,8 @@ app.get('/api/health', (_req: Request, res: Response) => {
   });
 });
 
-// Routes API (à brancher au fur et à mesure)
-// app.use('/api/auth', authRoutes);
+// Routes API
+app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 // app.use('/api/geofences', geofenceRoutes);
 // app.use('/api/fleet', fleetRoutes);

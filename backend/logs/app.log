@@ -13,3 +13,26 @@
 {"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-20 23:52:19"}
 {"level":"info","message":"GET /api/health","service":"benitrackpro","timestamp":"2026-07-20 23:54:48"}
 {"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-07-20 23:55:21"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:09:01"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:09:01"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:09:01"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-07-21 00:10:03"}
+{"level":"info","message":"POST /api/vehicles","service":"benitrackpro","timestamp":"2026-07-21 00:15:04"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:31:41"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:31:41"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:31:41"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:32:52"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:32:52"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:32:52"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:33:35"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:33:35"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:33:35"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:34:04"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:34:04"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:34:04"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:34:33"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:34:33"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:34:33"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:35:47"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:35:47"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:35:47"}

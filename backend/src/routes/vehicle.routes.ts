@@ -7,8 +7,11 @@ import {
   deleteVehicle,
   getVehicleLocation,
 } from '../controllers/vehicle.controller';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
+
+router.use(authenticate);
 
 router.get('/', getAllVehicles);
 router.post('/', createVehicle);
