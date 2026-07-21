@@ -3,6 +3,7 @@ import { getConnection } from '../config/database';
 import { Vehicle } from '../entities/Vehicle';
 import { VehiclePosition } from '../entities/VehiclePosition';
 import { emitVehicleLocation } from '../config/socket';
+import { checkGeofences } from '../services/geofence.service';
 import logger from '../config/logger';
 
 const vehicleRepository = () => getConnection().getRepository(Vehicle);
@@ -139,6 +140,12 @@ export const ingestVehicleLocation = async (req: Request, res: Response): Promis
       heading,
       recordedAt: timestamp,
     });
+
+    // Vérifie si cette position déclenche une entrée/sortie de géofence
+    // (asynchrone, ne bloque pas la réponse HTTP)
+    checkGeofences(id, { latitude, longitude }).catch((err) =>
+      logger.error('checkGeofences a échoué:', err)
+    );
 
     res.status(201).json(position);
   } catch (error) {

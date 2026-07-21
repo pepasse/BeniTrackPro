@@ -26,6 +26,10 @@ export const initializeSocket = (httpServer: http.Server): SocketIOServer => {
       socket.leave(`vehicle:${vehicleId}`);
     });
 
+    socket.on('subscribe:alerts', () => {
+      socket.join('alerts');
+    });
+
     socket.on('disconnect', () => {
       logger.info(`Client déconnecté: ${socket.id}`);
     });
@@ -55,4 +59,21 @@ export const emitVehicleLocation = (
 ): void => {
   if (!io) return;
   io.to(`vehicle:${vehicleId}`).emit('vehicle:location', payload);
+};
+
+// Diffuse une alerte de géofencing (entrée/sortie de zone) aux clients
+// abonnés au véhicule concerné, ainsi qu'à une room globale "alerts"
+// (pour un futur tableau de bord centralisé).
+export const emitGeofenceAlert = (payload: {
+  geofenceId: string;
+  geofenceName: string;
+  vehicleId: string;
+  eventType: 'enter' | 'exit';
+  latitude: number;
+  longitude: number;
+  occurredAt: Date;
+}): void => {
+  if (!io) return;
+  io.to(`vehicle:${payload.vehicleId}`).emit('geofence:alert', payload);
+  io.to('alerts').emit('geofence:alert', payload);
 };
