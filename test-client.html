@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>BeniTrackPro — Test temps réel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; margin: 0; display: flex; height: 100vh; }
+  #sidebar { width: 340px; padding: 16px; background: #0f172a; color: #e2e8f0; overflow-y: auto; }
+  #map { flex: 1; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: #38bdf8; margin: 20px 0 8px; }
+  h2:first-child { margin-top: 0; }
+  label { display: block; font-size: 12px; margin: 8px 0 4px; color: #94a3b8; }
+  input, button { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-size: 13px; }
+  button { background: #38bdf8; color: #0f172a; font-weight: 600; border: none; cursor: pointer; margin-top: 8px; }
+  button:hover { background: #7dd3fc; }
+  button.secondary { background: #334155; color: #e2e8f0; }
+  button.secondary:hover { background: #475569; }
+  #status { font-size: 12px; padding: 8px; border-radius: 6px; margin-top: 8px; }
+  .ok { background: #14532d; color: #86efac; }
+  .err { background: #7f1d1d; color: #fca5a5; }
+  .off { background: #334155; color: #94a3b8; }
+  #log { font-size: 11px; color: #64748b; max-height: 140px; overflow-y: auto; margin-top: 8px; white-space: pre-wrap; }
+  #posInfo { font-size: 12px; margin-top: 8px; line-height: 1.6; }
+  #posInfo span { color: #38bdf8; }
+  .arrow-icon { font-size: 26px; line-height: 1; text-align: center; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); transition: transform 0.4s linear; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h2>1. Connexion</h2>
+  <label>Email</label>
+  <input id="email" value="hermes@test.com" />
+  <label>Mot de passe</label>
+  <input id="password" type="password" value="motdepasse123" />
+  <button onclick="login()">Se connecter</button>
+  <div id="authStatus" class="status off">Non connecté</div>
+
+  <h2>2. Véhicule suivi</h2>
+  <label>ID du véhicule</label>
+  <input id="vehicleId" placeholder="colle l'id UUID du véhicule" />
+  <button onclick="subscribe()">S'abonner au flux temps réel</button>
+  <div id="socketStatus" class="status off">Socket déconnecté</div>
+
+  <h2>3. Simuler une position GPS</h2>
+  <label>Latitude</label>
+  <input id="lat" value="4.0511" />
+  <label>Longitude</label>
+  <input id="lng" value="9.7679" />
+  <label>Vitesse (km/h)</label>
+  <input id="speed" value="45" />
+  <button onclick="sendPosition()">Envoyer cette position</button>
+  <button class="secondary" onclick="toggleAutoSim()">▶ Simulation auto (trajet)</button>
+
+  <div id="posInfo">Aucune position reçue pour l'instant.</div>
+  <h2>Journal</h2>
+  <div id="log"></div>
+</div>
+
+<div id="map"></div>
+
+<script>
+const API_URL = 'http://localhost:5000';
+let accessToken = null;
+let socket = null;
+let marker = null;
+let trail = null;
+let trailPoints = [];
+let lastPos = null;
+let currentHeading = 0;
+let autoSimInterval = null;
+let simIndex = 0;
+
+const map = L.map('map').setView([4.0511, 9.7679], 13); // Douala par défaut
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+function makeArrowIcon(headingDeg) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="arrow-icon" style="transform: rotate(${headingDeg}deg)">➤</div>`,
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+  });
+}
+
+// Cap (bearing) en degrés entre deux points GPS, 0° = nord, sens horaire
+function computeBearing(from, to) {
+  const toRad = (d) => d * Math.PI / 180;
+  const toDeg = (r) => r * 180 / Math.PI;
+  const [lat1, lon1] = from.map(toRad);
+  const [lat2, lon2] = to.map(toRad);
+  const dLon = lon2 - lon1;
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  // -90 car le glyphe ➤ pointe déjà vers l'est (droite) à 0°, on le recale vers le nord
+  return (toDeg(Math.atan2(y, x)) + 360) % 360 - 90;
+}
+
+function log(msg) {
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  el.textContent = `[${time}] ${msg}\n` + el.textContent;
+}
+
+function setStatus(id, text, cls) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'status ' + cls;
+}
+
+async function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Échec de connexion');
+    accessToken = data.accessToken;
+    setStatus('authStatus', `Connecté : ${data.user.email}`, 'ok');
+    log('Connexion réussie');
+  } catch (e) {
+    setStatus('authStatus', e.message, 'err');
+    log('Erreur connexion: ' + e.message);
+  }
+}
+
+function subscribe() {
+  const vehicleId = document.getElementById('vehicleId').value.trim();
+  if (!vehicleId) { alert('Renseigne un ID de véhicule'); return; }
+
+  if (socket) socket.disconnect();
+  socket = io(API_URL);
+
+  // Repart d'une trace propre pour ce véhicule
+  trailPoints = [];
+  lastPos = null;
+  if (trail) { map.removeLayer(trail); trail = null; }
+  if (marker) { map.removeLayer(marker); marker = null; }
+
+  socket.on('connect', () => {
+    setStatus('socketStatus', 'Socket connecté', 'ok');
+    socket.emit('subscribe:vehicle', vehicleId);
+    log(`Abonné au véhicule ${vehicleId}`);
+  });
+
+  socket.on('disconnect', () => {
+    setStatus('socketStatus', 'Socket déconnecté', 'off');
+  });
+
+  socket.on('vehicle:location', (payload) => {
+    log(`Position reçue: ${payload.latitude.toFixed(5)}, ${payload.longitude.toFixed(5)}`);
+    updateMarker(payload);
+  });
+}
+
+function updateMarker(payload) {
+  const pos = [payload.latitude, payload.longitude];
+
+  // Cap : utilise celui envoyé par le tracker s'il existe, sinon le calcule
+  // à partir du déplacement entre les deux derniers points connus.
+  let heading = payload.heading;
+  if (heading === undefined || heading === null) {
+    heading = lastPos ? computeBearing(lastPos, pos) : currentHeading;
+  }
+  currentHeading = heading;
+  lastPos = pos;
+
+  if (!marker) {
+    marker = L.marker(pos, { icon: makeArrowIcon(heading) }).addTo(map);
+  } else {
+    marker.setLatLng(pos);
+    marker.setIcon(makeArrowIcon(heading));
+  }
+
+  trailPoints.push(pos);
+  if (!trail) {
+    trail = L.polyline(trailPoints, { color: '#38bdf8', weight: 3, opacity: 0.7 }).addTo(map);
+  } else {
+    trail.setLatLngs(trailPoints);
+  }
+
+  map.panTo(pos);
+  document.getElementById('posInfo').innerHTML =
+    `Lat: <span>${payload.latitude.toFixed(5)}</span><br>` +
+    `Lng: <span>${payload.longitude.toFixed(5)}</span><br>` +
+    `Vitesse: <span>${payload.speedKmh ?? '—'} km/h</span><br>` +
+    `Cap: <span>${Math.round(heading)}°</span><br>` +
+    `Heure: <span>${new Date(payload.recordedAt).toLocaleTimeString()}</span>`;
+}
+
+async function sendPosition() {
+  const vehicleId = document.getElementById('vehicleId').value.trim();
+  if (!accessToken) { alert('Connecte-toi d\'abord'); return; }
+  if (!vehicleId) { alert('Renseigne un ID de véhicule'); return; }
+
+  const latitude = parseFloat(document.getElementById('lat').value);
+  const longitude = parseFloat(document.getElementById('lng').value);
+  const speedKmh = parseFloat(document.getElementById('speed').value);
+
+  try {
+    const res = await fetch(`${API_URL}/api/vehicles/${vehicleId}/location`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ latitude, longitude, speedKmh })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Échec de l\'envoi');
+    log('Position envoyée avec succès');
+  } catch (e) {
+    log('Erreur envoi position: ' + e.message);
+  }
+}
+
+// Petit trajet simulé autour de Douala pour tester le déplacement en direct
+const simPath = [
+  [4.0511, 9.7679], [4.0525, 9.7690], [4.0540, 9.7702],
+  [4.0555, 9.7715], [4.0570, 9.7730], [4.0585, 9.7745],
+];
+
+function toggleAutoSim() {
+  const btn = event.target;
+  if (autoSimInterval) {
+    clearInterval(autoSimInterval);
+    autoSimInterval = null;
+    btn.textContent = '▶ Simulation auto (trajet)';
+    log('Simulation arrêtée');
+    return;
+  }
+  btn.textContent = '⏸ Arrêter la simulation';
+  log('Simulation démarrée (1 point / 2s)');
+  autoSimInterval = setInterval(() => {
+    const [lat, lng] = simPath[simIndex % simPath.length];
+    document.getElementById('lat').value = lat;
+    document.getElementById('lng').value = lng;
+    document.getElementById('speed').value = 30 + Math.round(Math.random() * 40);
+    sendPosition();
+    simIndex++;
+  }, 2000);
+}
+</script>
+</body>
+</html>

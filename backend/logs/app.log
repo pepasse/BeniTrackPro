@@ -45,3 +45,140 @@
 {"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:55:59"}
 {"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:55:59"}
 {"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:55:59"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 00:56:31"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 00:56:31"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 00:56:31"}
+{"level":"info","message":"POST /api/auth/refresh-token","service":"benitrackpro","timestamp":"2026-07-21 00:56:33"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:04:14"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:04:14"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:04:14"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:04:33"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:04:33"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:04:33"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:04:59"}
+{"code":"TS103","driverError":{"code":"TS103","file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"line":"95","name":"error","routine":"ts_indexing_verify_columns","severity":"ERROR"},"file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"level":"warn","line":"95","message":"Impossible de configurer la hypertable TimescaleDB (non bloquant): cannot create a unique index without the column \"recordedAt\" (used in partitioning)","query":"SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);","routine":"ts_indexing_verify_columns","service":"benitrackpro","severity":"ERROR","stack":"QueryFailedError: cannot create a unique index without the column \"recordedAt\" (used in partitioning)\n    at PostgresQueryRunner.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\typeorm\\src\\driver\\postgres\\PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async DataSource.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\src\\data-source\\DataSource.ts:541:20)\n    at async initializeDatabase (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\config\\database.ts:24:7)\n    at async start (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\server.ts:26:5)","timestamp":"2026-07-21 01:04:59"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:04:59"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:04:59"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:05:37"}
+{"code":"TS103","driverError":{"code":"TS103","file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"line":"95","name":"error","routine":"ts_indexing_verify_columns","severity":"ERROR"},"file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"level":"warn","line":"95","message":"Impossible de configurer la hypertable TimescaleDB (non bloquant): cannot create a unique index without the column \"recordedAt\" (used in partitioning)","query":"SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);","routine":"ts_indexing_verify_columns","service":"benitrackpro","severity":"ERROR","stack":"QueryFailedError: cannot create a unique index without the column \"recordedAt\" (used in partitioning)\n    at PostgresQueryRunner.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\typeorm\\src\\driver\\postgres\\PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async DataSource.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\src\\data-source\\DataSource.ts:541:20)\n    at async initializeDatabase (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\config\\database.ts:24:7)\n    at async start (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\server.ts:26:5)","timestamp":"2026-07-21 01:05:37"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:05:37"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:05:37"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:05:57"}
+{"code":"TS103","driverError":{"code":"TS103","file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"line":"95","name":"error","routine":"ts_indexing_verify_columns","severity":"ERROR"},"file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"level":"warn","line":"95","message":"Impossible de configurer la hypertable TimescaleDB (non bloquant): cannot create a unique index without the column \"recordedAt\" (used in partitioning)","query":"SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);","routine":"ts_indexing_verify_columns","service":"benitrackpro","severity":"ERROR","stack":"QueryFailedError: cannot create a unique index without the column \"recordedAt\" (used in partitioning)\n    at PostgresQueryRunner.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\typeorm\\src\\driver\\postgres\\PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async DataSource.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\src\\data-source\\DataSource.ts:541:20)\n    at async initializeDatabase (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\config\\database.ts:24:7)\n    at async start (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\server.ts:26:5)","timestamp":"2026-07-21 01:05:57"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:05:57"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:05:57"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:06:17"}
+{"code":"TS103","driverError":{"code":"TS103","file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"line":"95","name":"error","routine":"ts_indexing_verify_columns","severity":"ERROR"},"file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"level":"warn","line":"95","message":"Impossible de configurer la hypertable TimescaleDB (non bloquant): cannot create a unique index without the column \"recordedAt\" (used in partitioning)","query":"SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);","routine":"ts_indexing_verify_columns","service":"benitrackpro","severity":"ERROR","stack":"QueryFailedError: cannot create a unique index without the column \"recordedAt\" (used in partitioning)\n    at PostgresQueryRunner.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\typeorm\\src\\driver\\postgres\\PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async DataSource.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\src\\data-source\\DataSource.ts:541:20)\n    at async initializeDatabase (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\config\\database.ts:24:7)\n    at async start (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\server.ts:13:5)","timestamp":"2026-07-21 01:06:17"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:06:17"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:06:17"}
+{"level":"info","message":"Client connecté via Socket.io: nspHkdshzkLxwspBAAAJ","service":"benitrackpro","timestamp":"2026-07-21 01:18:26"}
+{"level":"info","message":"Client déconnecté: nspHkdshzkLxwspBAAAJ","service":"benitrackpro","timestamp":"2026-07-21 01:20:30"}
+{"level":"info","message":"POST /api/auth/login","service":"benitrackpro","timestamp":"2026-07-21 01:20:57"}
+{"level":"info","message":"Client connecté via Socket.io: 2rereItxw8iWw1Z4AAA8","service":"benitrackpro","timestamp":"2026-07-21 01:21:20"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:29"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:35"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:37"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:39"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:41"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:43"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:45"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:47"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:49"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:51"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:53"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:55"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:57"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:21:59"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:01"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:03"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:05"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:07"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:09"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:11"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:13"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:15"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:17"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:19"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:21"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:23"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:25"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:27"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:29"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:31"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:33"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:35"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:37"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:39"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:41"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:43"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:45"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:47"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:49"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:51"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:53"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:55"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:57"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:22:59"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:01"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:03"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:05"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:07"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:09"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:11"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:13"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:15"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:17"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:19"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:21"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:24"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:26"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:28"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:30"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:32"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:34"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:36"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:38"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:40"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:42"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:44"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:46"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:48"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:50"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:52"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:54"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:56"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:23:58"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:00"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:02"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:04"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:06"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:08"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:10"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:12"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:14"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:16"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:18"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:20"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:22"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:24:27"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:25:27"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:27"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:48"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:49"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:51"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:53"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:56"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:26:58"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:27:00"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:27:02"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:27:04"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:27:06"}
+{"level":"info","message":"POST /api/vehicles/0879e776-3bde-4507-864f-df80e4ff5799/location","service":"benitrackpro","timestamp":"2026-07-21 01:27:08"}
+{"level":"info","message":"Client déconnecté: 2rereItxw8iWw1Z4AAA8","service":"benitrackpro","timestamp":"2026-07-21 01:28:28"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-07-21 01:34:21"}
+{"code":"TS103","driverError":{"code":"TS103","file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"line":"95","name":"error","routine":"ts_indexing_verify_columns","severity":"ERROR"},"file":"indexing.c","hint":"If you're creating a hypertable on a table with a primary key, ensure the partitioning column is part of the primary or composite key.","length":291,"level":"warn","line":"95","message":"Impossible de configurer la hypertable TimescaleDB (non bloquant): cannot create a unique index without the column \"recordedAt\" (used in partitioning)","query":"SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);","routine":"ts_indexing_verify_columns","service":"benitrackpro","severity":"ERROR","stack":"QueryFailedError: cannot create a unique index without the column \"recordedAt\" (used in partitioning)\n    at PostgresQueryRunner.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\typeorm\\src\\driver\\postgres\\PostgresQueryRunner.ts:325:19)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async DataSource.query (C:\\Users\\pepas\\BeniTrackPro\\backend\\node_modules\\src\\data-source\\DataSource.ts:541:20)\n    at async initializeDatabase (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\config\\database.ts:24:7)\n    at async start (C:\\Users\\pepas\\BeniTrackPro\\backend\\src\\server.ts:13:5)","timestamp":"2026-07-21 01:34:21"}
+{"level":"info","message":"Serveur BeniTrackPro démarré sur le port 5000 (development)","service":"benitrackpro","timestamp":"2026-07-21 01:34:21"}
+{"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-07-21 01:34:21"}
+{"level":"info","message":"Signal SIGINT reçu, arrêt en cours...","service":"benitrackpro","timestamp":"2026-07-21 01:36:13"}
+{"level":"info","message":"Database connection closed","service":"benitrackpro","timestamp":"2026-07-21 01:36:13"}
+{"level":"info","message":"Redis connection closed","service":"benitrackpro","timestamp":"2026-07-21 01:36:13"}

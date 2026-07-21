@@ -17,6 +17,18 @@ export const initializeDatabase = async (): Promise<DataSource> => {
   try {
     await AppDataSource.initialize();
     logger.info('Database connection established successfully');
+
+    // Convertit la table de positions GPS en hypertable TimescaleDB
+    // (idempotent grâce à if_not_exists, donc sans risque au redémarrage)
+    try {
+      await AppDataSource.query(
+        `SELECT create_hypertable('vehicle_positions', 'recordedAt', if_not_exists => TRUE, migrate_data => TRUE);`
+      );
+      logger.info('vehicle_positions configurée comme hypertable TimescaleDB');
+    } catch (hypertableError) {
+      logger.warn('Impossible de configurer la hypertable TimescaleDB (non bloquant):', hypertableError as Error);
+    }
+
     return AppDataSource;
   } catch (error) {
     logger.error('Failed to connect to database:', error);

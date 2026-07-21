@@ -1,25 +1,12 @@
 import 'reflect-metadata';
 import http from 'http';
-import { Server as SocketIOServer } from 'socket.io';
 import app from './app';
 import { config, logger, initializeDatabase, initializeRedis, closeDatabase, closeRedis } from './config';
+import { initializeSocket } from './config/socket';
 
 const httpServer = http.createServer(app);
 
-const io = new SocketIOServer(httpServer, {
-  cors: {
-    origin: config.cors.origin,
-    credentials: config.cors.credentials,
-  },
-});
-
-io.on('connection', (socket) => {
-  logger.info(`Client connecté via Socket.io: ${socket.id}`);
-
-  socket.on('disconnect', () => {
-    logger.info(`Client déconnecté: ${socket.id}`);
-  });
-});
+initializeSocket(httpServer);
 
 const start = async (): Promise<void> => {
   try {
@@ -47,5 +34,3 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 start();
-
-export { io };

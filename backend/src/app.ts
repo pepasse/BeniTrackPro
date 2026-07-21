@@ -24,6 +24,7 @@ const limiter = rateLimit({
   max: config.rateLimit.maxRequests,
   standardHeaders: true,
   legacyHeaders: false,
+  message: { message: 'Trop de requêtes, réessaie dans quelques minutes.' },
 });
 app.use('/api', limiter);
 
