@@ -9,7 +9,13 @@ import {
   ingestVehicleLocation,
   getVehicleHistory,
 } from '../controllers/vehicle.controller';
+import {
+  getVehicleSubscription,
+  renewVehicleSubscription,
+  getVehiclePaymentHistory,
+} from '../controllers/subscription.controller';
 import { authenticate } from '../middleware/auth.middleware';
+import { requireActiveSubscription } from '../middleware/subscription.middleware';
 
 const router = Router();
 
@@ -20,8 +26,18 @@ router.post('/', createVehicle);
 router.get('/:id', getVehicleById);
 router.put('/:id', updateVehicle);
 router.delete('/:id', deleteVehicle);
+
+// Dernière position connue : toujours consultable, même abonnement expiré
+// (utile pour que le client voie que le suivi s'est arrêté et doive payer)
 router.get('/:id/location', getVehicleLocation);
-router.post('/:id/location', ingestVehicleLocation);
-router.get('/:id/history', getVehicleHistory);
+
+// Suivi actif : bloqué si l'abonnement du véhicule a expiré
+router.post('/:id/location', requireActiveSubscription, ingestVehicleLocation);
+router.get('/:id/history', requireActiveSubscription, getVehicleHistory);
+
+// Abonnement
+router.get('/:id/subscription', getVehicleSubscription);
+router.post('/:id/subscription/renew', renewVehicleSubscription);
+router.get('/:id/subscription/payments', getVehiclePaymentHistory);
 
 export default router;

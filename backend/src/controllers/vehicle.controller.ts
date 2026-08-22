@@ -4,6 +4,7 @@ import { Vehicle } from '../entities/Vehicle';
 import { VehiclePosition } from '../entities/VehiclePosition';
 import { emitVehicleLocation } from '../config/socket';
 import { checkGeofences } from '../services/geofence.service';
+import { createInitialSubscription, checkExpirationWarning } from '../services/subscription.service';
 import logger from '../config/logger';
 
 const vehicleRepository = () => getConnection().getRepository(Vehicle);
@@ -51,6 +52,10 @@ export const createVehicle = async (req: Request, res: Response): Promise<void> 
 
     const vehicle = repo.create({ plateNumber, brand, model, year, type, rfidTag });
     await repo.save(vehicle);
+
+    // Ouvre automatiquement un abonnement d'un an pour ce véhicule
+    await createInitialSubscription(vehicle.id);
+
     res.status(201).json(vehicle);
   } catch (error) {
     logger.error('Erreur lors de la création du véhicule:', error);
@@ -161,12 +166,18 @@ export const getVehicleLocation = async (req: Request, res: Response): Promise<v
       res.status(404).json({ message: 'Véhicule introuvable' });
       return;
     }
+
+    // Averti le client si l'abonnement expire bientôt (au plus 1x/semaine),
+    // affiché directement dans l'app au moment où il consulte le suivi.
+    const subscriptionWarning = await checkExpirationWarning(vehicle.id);
+
     res.status(200).json({
       vehicleId: vehicle.id,
       latitude: vehicle.lastLatitude,
       longitude: vehicle.lastLongitude,
       speedKmh: vehicle.lastSpeedKmh,
       updatedAt: vehicle.lastLocationAt,
+      ...(subscriptionWarning && { subscriptionWarning }),
     });
   } catch (error) {
     logger.error('Erreur lors de la récupération de la position:', error);

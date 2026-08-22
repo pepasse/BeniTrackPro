@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import http from 'http';
 import config from './config';
 import logger from './logger';
+import { checkExpirationWarning } from '../services/subscription.service';
 
 let io: SocketIOServer | null = null;
 
@@ -18,8 +19,20 @@ export const initializeSocket = (httpServer: http.Server): SocketIOServer => {
 
     // Le client rejoint une "room" par véhicule pour ne recevoir
     // que les mises à jour des véhicules qu'il suit.
-    socket.on('subscribe:vehicle', (vehicleId: string) => {
+    socket.on('subscribe:vehicle', async (vehicleId: string) => {
       socket.join(`vehicle:${vehicleId}`);
+
+      // Il consulte activement le suivi de ce véhicule : c'est le bon
+      // moment pour lui signaler une expiration d'abonnement imminente
+      // (au plus 1x/semaine), plutôt que de compter sur un email.
+      try {
+        const warning = await checkExpirationWarning(vehicleId);
+        if (warning) {
+          socket.emit('subscription:warning', warning);
+        }
+      } catch (error) {
+        logger.error("Erreur lors de la vérification de l'abonnement (socket):", error);
+      }
     });
 
     socket.on('unsubscribe:vehicle', (vehicleId: string) => {
