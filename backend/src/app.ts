@@ -7,6 +7,7 @@ import { config, logger } from './config';
 import vehicleRoutes from './routes/vehicle.routes';
 import authRoutes from './routes/auth.routes';
 import geofenceRoutes from './routes/geofence.routes';
+import fleetRoutes from './routes/fleet.routes';
 
 const app: Application = express();
 
@@ -52,7 +53,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/geofences', geofenceRoutes);
-// app.use('/api/fleet', fleetRoutes);
+app.use('/api/fleet', fleetRoutes);
 // app.use('/api/alerts', alertRoutes);
 
 // 404

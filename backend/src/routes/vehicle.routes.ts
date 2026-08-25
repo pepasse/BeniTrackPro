@@ -14,6 +14,7 @@ import {
   renewVehicleSubscription,
   getVehiclePaymentHistory,
 } from '../controllers/subscription.controller';
+import { getVehicleStatsController } from '../controllers/fleet.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireActiveSubscription } from '../middleware/subscription.middleware';
 
@@ -39,5 +40,8 @@ router.get('/:id/history', requireActiveSubscription, getVehicleHistory);
 router.get('/:id/subscription', getVehicleSubscription);
 router.post('/:id/subscription/renew', renewVehicleSubscription);
 router.get('/:id/subscription/payments', getVehiclePaymentHistory);
+
+// Statistiques (distance parcourue, consommation estimée)
+router.get('/:id/stats', getVehicleStatsController);
 
 export default router;

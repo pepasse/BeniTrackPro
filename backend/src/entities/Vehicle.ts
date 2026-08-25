@@ -61,6 +61,12 @@ export class Vehicle {
   @Column({ type: 'double precision', nullable: true })
   lastSpeedKmh?: number;
 
+  // Consommation moyenne déclarée pour ce véhicule (L/100km), utilisée pour
+  // estimer la consommation totale à partir de la distance parcourue,
+  // faute de capteur carburant réel branché sur le tracker.
+  @Column({ type: 'double precision', default: 10 })
+  fuelConsumptionL100km!: number;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date;
 

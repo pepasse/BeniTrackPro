@@ -10,7 +10,8 @@
   * { box-sizing: border-box; }
   body { font-family: system-ui, sans-serif; margin: 0; display: flex; height: 100vh; }
   #sidebar { width: 340px; padding: 16px; background: #0f172a; color: #e2e8f0; overflow-y: auto; }
-  #map { flex: 1; }
+  #mapWrap { flex: 1; position: relative; }
+  #map { width: 100%; height: 100%; }
   h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: #38bdf8; margin: 20px 0 8px; }
   h2:first-child { margin-top: 0; }
   label { display: block; font-size: 12px; margin: 8px 0 4px; color: #94a3b8; }
@@ -19,7 +20,7 @@
   button:hover { background: #7dd3fc; }
   button.secondary { background: #334155; color: #e2e8f0; }
   button.secondary:hover { background: #475569; }
-  #status { font-size: 12px; padding: 8px; border-radius: 6px; margin-top: 8px; }
+  .status { font-size: 12px; padding: 8px; border-radius: 6px; margin-top: 8px; }
   .ok { background: #14532d; color: #86efac; }
   .err { background: #7f1d1d; color: #fca5a5; }
   .off { background: #334155; color: #94a3b8; }
@@ -27,6 +28,17 @@
   #posInfo { font-size: 12px; margin-top: 8px; line-height: 1.6; }
   #posInfo span { color: #38bdf8; }
   .arrow-icon { font-size: 26px; line-height: 1; text-align: center; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); transition: transform 0.4s linear; }
+
+  #subBanner {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 1000;
+    display: none; padding: 12px 16px; font-size: 13px;
+    background: #92400e; color: #fef3c7; border-bottom: 2px solid #f59e0b;
+    align-items: center; justify-content: space-between; gap: 12px;
+  }
+  #subBanner.expired { background: #7f1d1d; color: #fecaca; border-bottom-color: #ef4444; }
+  #subBanner button { width: auto; margin: 0; padding: 6px 12px; background: #f59e0b; color: #451a03; font-weight: 700; }
+  #subBanner.expired button.renew { background: #ef4444; color: #450a0a; }
+  #subBanner .close { background: transparent; color: inherit; padding: 4px 8px; font-weight: 400; }
 </style>
 </head>
 <body>
@@ -44,6 +56,7 @@
   <label>ID du véhicule</label>
   <input id="vehicleId" placeholder="colle l'id UUID du véhicule" />
   <button onclick="subscribe()">S'abonner au flux temps réel</button>
+  <button class="secondary" onclick="checkLocation()">Vérifier la position (+ abonnement)</button>
   <div id="socketStatus" class="status off">Socket déconnecté</div>
 
   <h2>3. Simuler une position GPS</h2>
@@ -54,14 +67,23 @@
   <label>Vitesse (km/h)</label>
   <input id="speed" value="45" />
   <button onclick="sendPosition()">Envoyer cette position</button>
-  <button class="secondary" onclick="toggleAutoSim()">▶ Simulation auto (trajet)</button>
+  <button class="secondary" id="autoSimBtn" onclick="toggleAutoSim()">▶ Simulation auto (trajet)</button>
 
   <div id="posInfo">Aucune position reçue pour l'instant.</div>
   <h2>Journal</h2>
   <div id="log"></div>
 </div>
 
-<div id="map"></div>
+<div id="mapWrap">
+  <div id="subBanner">
+    <span id="subBannerText"></span>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="renew" onclick="renewSubscription()">Renouveler (payer)</button>
+      <button class="close" onclick="hideBanner()">✕</button>
+    </div>
+  </div>
+  <div id="map"></div>
+</div>
 
 <script>
 const API_URL = 'http://localhost:5000';
@@ -75,7 +97,7 @@ let currentHeading = 0;
 let autoSimInterval = null;
 let simIndex = 0;
 
-const map = L.map('map').setView([4.0511, 9.7679], 13); // Douala par défaut
+const map = L.map('map').setView([4.0511, 9.7679], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap'
 }).addTo(map);
@@ -89,7 +111,6 @@ function makeArrowIcon(headingDeg) {
   });
 }
 
-// Cap (bearing) en degrés entre deux points GPS, 0° = nord, sens horaire
 function computeBearing(from, to) {
   const toRad = (d) => d * Math.PI / 180;
   const toDeg = (r) => r * 180 / Math.PI;
@@ -98,7 +119,6 @@ function computeBearing(from, to) {
   const dLon = lon2 - lon1;
   const y = Math.sin(dLon) * Math.cos(lat2);
   const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  // -90 car le glyphe ➤ pointe déjà vers l'est (droite) à 0°, on le recale vers le nord
   return (toDeg(Math.atan2(y, x)) + 360) % 360 - 90;
 }
 
@@ -112,6 +132,43 @@ function setStatus(id, text, cls) {
   const el = document.getElementById(id);
   el.textContent = text;
   el.className = 'status ' + cls;
+}
+
+function showBanner(daysRemaining, expiresAt, expired) {
+  const banner = document.getElementById('subBanner');
+  const text = document.getElementById('subBannerText');
+  banner.classList.toggle('expired', !!expired);
+  if (expired) {
+    text.textContent = `⛔ Abonnement expiré depuis le ${new Date(expiresAt).toLocaleDateString('fr-FR')}. Le suivi GPS est suspendu.`;
+  } else {
+    text.textContent = `⚠️ Abonnement expire dans ${daysRemaining} jour${daysRemaining > 1 ? 's' : ''} (le ${new Date(expiresAt).toLocaleDateString('fr-FR')}).`;
+  }
+  banner.style.display = 'flex';
+}
+
+function hideBanner() {
+  document.getElementById('subBanner').style.display = 'none';
+}
+
+async function renewSubscription() {
+  const vehicleId = document.getElementById('vehicleId').value.trim();
+  if (!accessToken || !vehicleId) return;
+  try {
+    const res = await fetch(`${API_URL}/api/vehicles/${vehicleId}/subscription/renew`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ amount: 25000, currency: 'XAF', method: 'mobile_money', reference: 'TEST-' + Date.now() })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Échec du renouvellement');
+    log(`Abonnement renouvelé, nouvelle échéance : ${new Date(data.subscription.expiresAt).toLocaleDateString('fr-FR')}`);
+    hideBanner();
+  } catch (e) {
+    log('Erreur renouvellement: ' + e.message);
+  }
 }
 
 async function login() {
@@ -134,6 +191,27 @@ async function login() {
   }
 }
 
+async function checkLocation() {
+  const vehicleId = document.getElementById('vehicleId').value.trim();
+  if (!accessToken || !vehicleId) { alert('Connecte-toi et renseigne un ID de véhicule'); return; }
+
+  try {
+    const res = await fetch(`${API_URL}/api/vehicles/${vehicleId}/location`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Échec de la requête');
+
+    log(`Position consultée: ${data.latitude ?? '—'}, ${data.longitude ?? '—'}`);
+    if (data.subscriptionWarning) {
+      showBanner(data.subscriptionWarning.daysRemaining, data.subscriptionWarning.expiresAt, false);
+      log(`⚠️ Avertissement abonnement: ${data.subscriptionWarning.daysRemaining} jour(s) restants`);
+    }
+  } catch (e) {
+    log('Erreur consultation position: ' + e.message);
+  }
+}
+
 function subscribe() {
   const vehicleId = document.getElementById('vehicleId').value.trim();
   if (!vehicleId) { alert('Renseigne un ID de véhicule'); return; }
@@ -141,7 +219,6 @@ function subscribe() {
   if (socket) socket.disconnect();
   socket = io(API_URL);
 
-  // Repart d'une trace propre pour ce véhicule
   trailPoints = [];
   lastPos = null;
   if (trail) { map.removeLayer(trail); trail = null; }
@@ -161,13 +238,20 @@ function subscribe() {
     log(`Position reçue: ${payload.latitude.toFixed(5)}, ${payload.longitude.toFixed(5)}`);
     updateMarker(payload);
   });
+
+  socket.on('subscription:warning', (warning) => {
+    log(`⚠️ Avertissement abonnement (temps réel): ${warning.daysRemaining} jour(s) restants`);
+    showBanner(warning.daysRemaining, warning.expiresAt, false);
+  });
+
+  socket.on('geofence:alert', (alert) => {
+    log(`📍 Géofence "${alert.geofenceName}": ${alert.eventType === 'enter' ? 'entrée' : 'sortie'}`);
+  });
 }
 
 function updateMarker(payload) {
   const pos = [payload.latitude, payload.longitude];
 
-  // Cap : utilise celui envoyé par le tracker s'il existe, sinon le calcule
-  // à partir du déplacement entre les deux derniers points connus.
   let heading = payload.heading;
   if (heading === undefined || heading === null) {
     heading = lastPos ? computeBearing(lastPos, pos) : currentHeading;
@@ -217,6 +301,14 @@ async function sendPosition() {
       body: JSON.stringify({ latitude, longitude, speedKmh })
     });
     const data = await res.json();
+
+    if (res.status === 402) {
+      showBanner(0, data.expiresAt || new Date().toISOString(), true);
+      log('⛔ Position refusée: abonnement expiré (402)');
+      if (autoSimInterval) toggleAutoSim();
+      return;
+    }
+
     if (!res.ok) throw new Error(data.message || 'Échec de l\'envoi');
     log('Position envoyée avec succès');
   } catch (e) {
@@ -224,14 +316,13 @@ async function sendPosition() {
   }
 }
 
-// Petit trajet simulé autour de Douala pour tester le déplacement en direct
 const simPath = [
   [4.0511, 9.7679], [4.0525, 9.7690], [4.0540, 9.7702],
   [4.0555, 9.7715], [4.0570, 9.7730], [4.0585, 9.7745],
 ];
 
 function toggleAutoSim() {
-  const btn = event.target;
+  const btn = document.getElementById('autoSimBtn');
   if (autoSimInterval) {
     clearInterval(autoSimInterval);
     autoSimInterval = null;
