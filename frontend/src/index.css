@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  /* Palette "salle de contrôle logistique" : fond encre profonde, deux
+     accents fonctionnels (ambre = signalisation routière/alerte,
+     turquoise = signal GPS actif), pas de bleu SaaS générique. */
+  --color-ink: #0b1220;
+  --color-surface: #131b2e;
+  --color-surface-raised: #1a2438;
+  --color-border: #24304a;
+  --color-text: #e7ecf5;
+  --color-text-muted: #8b96ac;
+  --color-amber: #e8a33d;
+  --color-amber-dim: #6b4c1f;
+  --color-signal: #3fbfad;
+  --color-signal-dim: #1f4a44;
+  --color-danger: #e5484d;
+  --color-danger-dim: #5c2426;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}

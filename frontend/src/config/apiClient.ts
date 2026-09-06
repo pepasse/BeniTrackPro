@@ -1,75 +1,82 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
-import { API_CONFIG, AUTH_CONFIG } from './config';
-import { ENDPOINTS } from './constants';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { API_URL } from './config';
+import { API_ENDPOINTS } from './constants';
 
-class ApiClient {
-  private axiosInstance: AxiosInstance;
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
 
-  constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: API_CONFIG.BASE_URL,
-      timeout: API_CONFIG.TIMEOUT,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+// Ces fonctions sont branchées depuis authSlice pour éviter une dépendance
+// circulaire entre le client API et le store Redux.
+let getAccessToken: () => string | null = () => null;
+let getRefreshToken: () => string | null = () => null;
+let onTokensRefreshed: (accessToken: string, refreshToken: string) => void = () => {};
+let onAuthExpired: () => void = () => {};
 
-    // Intercepteur de requête
-    this.axiosInstance.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem(AUTH_CONFIG.TOKEN_KEY);
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
+export const attachAuthHandlers = (handlers: {
+  getAccessToken: () => string | null;
+  getRefreshToken: () => string | null;
+  onTokensRefreshed: (accessToken: string, refreshToken: string) => void;
+  onAuthExpired: () => void;
+}) => {
+  getAccessToken = handlers.getAccessToken;
+  getRefreshToken = handlers.getRefreshToken;
+  onTokensRefreshed = handlers.onTokensRefreshed;
+  onAuthExpired = handlers.onAuthExpired;
+};
 
-    // Intercepteur de réponse
-    this.axiosInstance.interceptors.response.use(
-      (response) => response.data,
-      (error: AxiosError) => this.handleError(error)
-    );
+apiClient.interceptors.request.use((config) => {
+  const token = getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
+  return config;
+});
 
-  private handleError(error: AxiosError) {
-    if (error.response?.status === 401) {
-      // Token expiré, redirection vers login
-      localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
-      window.location.href = '/login';
+let refreshPromise: Promise<string | null> | null = null;
+
+const refreshAccessToken = async (): Promise<string | null> => {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return null;
+
+  try {
+    const { data } = await axios.post(`${API_URL}${API_ENDPOINTS.AUTH.REFRESH}`, { refreshToken });
+    onTokensRefreshed(data.accessToken, data.refreshToken);
+    return data.accessToken as string;
+  } catch {
+    return null;
+  }
+};
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // Plusieurs requêtes peuvent échouer en même temps sur un token expiré :
+      // on ne déclenche qu'un seul rafraîchissement, les autres l'attendent.
+      if (!refreshPromise) {
+        refreshPromise = refreshAccessToken().finally(() => {
+          refreshPromise = null;
+        });
+      }
+
+      const newAccessToken = await refreshPromise;
+
+      if (newAccessToken) {
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+      }
+
+      onAuthExpired();
     }
+
     return Promise.reject(error);
   }
+);
 
-  public getInstance(): AxiosInstance {
-    return this.axiosInstance;
-  }
-
-  // GET
-  public async get<T = any>(url: string, config?: any): Promise<T> {
-    return this.axiosInstance.get<any, T>(url, config);
-  }
-
-  // POST
-  public async post<T = any>(url: string, data?: any, config?: any): Promise<T> {
-    return this.axiosInstance.post<any, T>(url, data, config);
-  }
-
-  // PUT
-  public async put<T = any>(url: string, data?: any, config?: any): Promise<T> {
-    return this.axiosInstance.put<any, T>(url, data, config);
-  }
-
-  // DELETE
-  public async delete<T = any>(url: string, config?: any): Promise<T> {
-    return this.axiosInstance.delete<any, T>(url, config);
-  }
-
-  // PATCH
-  public async patch<T = any>(url: string, data?: any, config?: any): Promise<T> {
-    return this.axiosInstance.patch<any, T>(url, data, config);
-  }
-}
-
-export default new ApiClient();
+export default apiClient;
