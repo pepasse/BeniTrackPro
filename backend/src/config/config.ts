@@ -33,7 +33,12 @@ const config = {
 
   // CORS
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    // CORS_ORIGIN peut contenir plusieurs origines séparées par des virgules
+    // (ex: "http://localhost:3000,http://localhost:5500") pour autoriser à
+    // la fois l'app React et le client de test HTML en développement.
+    origin: (process.env.CORS_ORIGIN || 'http://localhost:3000')
+      .split(',')
+      .map((o) => o.trim()),
     credentials: true,
   },
 
