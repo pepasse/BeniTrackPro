@@ -14,10 +14,20 @@ export interface Vehicle {
   year?: number;
   type: VehicleType;
   status: VehicleStatus;
+  rfidTag?: string;
   lastLatitude?: number;
   lastLongitude?: number;
   lastLocationAt?: string;
   lastSpeedKmh?: number;
+}
+
+export interface VehicleInput {
+  plateNumber: string;
+  brand: string;
+  model: string;
+  year?: number;
+  type: VehicleType;
+  rfidTag?: string;
 }
 
 interface VehiclesState {
@@ -25,6 +35,7 @@ interface VehiclesState {
   selectedVehicleId: string | null;
   status: 'idle' | 'loading' | 'failed';
   error: string | null;
+  mutationError: string | null;
 }
 
 const initialState: VehiclesState = {
@@ -32,6 +43,15 @@ const initialState: VehiclesState = {
   selectedVehicleId: null,
   status: 'idle',
   error: null,
+  mutationError: null,
+};
+
+const extractErrorMessage = (error: unknown, fallback: string): string => {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response?: { data?: { message?: string } } }).response;
+    if (response?.data?.message) return response.data.message;
+  }
+  return fallback;
 };
 
 export const fetchVehicles = createAsyncThunk('vehicles/fetchAll', async () => {
@@ -39,12 +59,51 @@ export const fetchVehicles = createAsyncThunk('vehicles/fetchAll', async () => {
   return data;
 });
 
+export const createVehicle = createAsyncThunk(
+  'vehicles/create',
+  async (payload: VehicleInput, { rejectWithValue }) => {
+    try {
+      const { data } = await apiClient.post<Vehicle>(API_ENDPOINTS.VEHICLES.CREATE, payload);
+      return data;
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Impossible de créer le véhicule'));
+    }
+  }
+);
+
+export const updateVehicle = createAsyncThunk(
+  'vehicles/update',
+  async ({ id, ...payload }: VehicleInput & { id: string }, { rejectWithValue }) => {
+    try {
+      const { data } = await apiClient.put<Vehicle>(API_ENDPOINTS.VEHICLES.UPDATE(id), payload);
+      return data;
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Impossible de mettre à jour le véhicule'));
+    }
+  }
+);
+
+export const deleteVehicle = createAsyncThunk(
+  'vehicles/delete',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await apiClient.delete(API_ENDPOINTS.VEHICLES.DELETE(id));
+      return id;
+    } catch (error) {
+      return rejectWithValue(extractErrorMessage(error, 'Impossible de supprimer le véhicule'));
+    }
+  }
+);
+
 const vehiclesSlice = createSlice({
   name: 'vehicles',
   initialState,
   reducers: {
     selectVehicle(state, action: PayloadAction<string | null>) {
       state.selectedVehicleId = action.payload;
+    },
+    clearMutationError(state) {
+      state.mutationError = null;
     },
     // Appliqué à chaque événement `vehicle:location` reçu via Socket.io
     applyLiveLocation(state, action: PayloadAction<VehicleLocationEvent>) {
@@ -70,9 +129,31 @@ const vehiclesSlice = createSlice({
       .addCase(fetchVehicles.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Impossible de charger les véhicules';
+      })
+      .addCase(createVehicle.fulfilled, (state, action) => {
+        state.items.unshift(action.payload);
+        state.mutationError = null;
+      })
+      .addCase(createVehicle.rejected, (state, action) => {
+        state.mutationError = action.payload as string;
+      })
+      .addCase(updateVehicle.fulfilled, (state, action) => {
+        const index = state.items.findIndex((v) => v.id === action.payload.id);
+        if (index !== -1) state.items[index] = { ...state.items[index], ...action.payload };
+        state.mutationError = null;
+      })
+      .addCase(updateVehicle.rejected, (state, action) => {
+        state.mutationError = action.payload as string;
+      })
+      .addCase(deleteVehicle.fulfilled, (state, action) => {
+        state.items = state.items.filter((v) => v.id !== action.payload);
+        if (state.selectedVehicleId === action.payload) state.selectedVehicleId = null;
+      })
+      .addCase(deleteVehicle.rejected, (state, action) => {
+        state.mutationError = action.payload as string;
       });
   },
 });
 
-export const { selectVehicle, applyLiveLocation } = vehiclesSlice.actions;
+export const { selectVehicle, applyLiveLocation, clearMutationError } = vehiclesSlice.actions;
 export default vehiclesSlice.reducer;

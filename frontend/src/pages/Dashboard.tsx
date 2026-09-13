@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { logout } from '../store/authSlice';
-import { fetchVehicles, selectVehicle, applyLiveLocation } from '../store/vehiclesSlice';
+import {
+  fetchVehicles,
+  selectVehicle,
+  applyLiveLocation,
+  createVehicle,
+  updateVehicle,
+  deleteVehicle,
+  clearMutationError,
+  type Vehicle,
+  type VehicleInput,
+} from '../store/vehiclesSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   getSocket,
@@ -12,14 +23,19 @@ import {
 } from '../services/socket';
 import VehicleList from '../components/VehicleList';
 import VehicleMap from '../components/VehicleMap';
+import VehicleFormModal from '../components/VehicleFormModal';
 
 const DashboardPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
-  const { items: vehicles, selectedVehicleId, status } = useAppSelector((state) => state.vehicles);
+  const { items: vehicles, selectedVehicleId, status, mutationError } = useAppSelector(
+    (state) => state.vehicles
+  );
 
   const [warning, setWarning] = useState<SubscriptionWarningEvent | null>(null);
+  const [modal, setModal] = useState<{ mode: 'create' | 'edit'; vehicle?: Vehicle } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchVehicles());
@@ -57,6 +73,43 @@ const DashboardPage = () => {
     navigate('/login');
   };
 
+  const openCreateModal = () => {
+    dispatch(clearMutationError());
+    setModal({ mode: 'create' });
+  };
+
+  const openEditModal = (vehicle: Vehicle) => {
+    dispatch(clearMutationError());
+    setModal({ mode: 'edit', vehicle });
+  };
+
+  const closeModal = () => {
+    setModal(null);
+    dispatch(clearMutationError());
+  };
+
+  const handleFormSubmit = async (input: VehicleInput) => {
+    setIsSubmitting(true);
+    const action =
+      modal?.mode === 'edit' && modal.vehicle
+        ? await dispatch(updateVehicle({ id: modal.vehicle.id, ...input }))
+        : await dispatch(createVehicle(input));
+    setIsSubmitting(false);
+
+    if (action.type.endsWith('/fulfilled')) {
+      setModal(null);
+    }
+  };
+
+  const handleDelete = (vehicle: Vehicle) => {
+    const confirmed = window.confirm(
+      `Supprimer le véhicule ${vehicle.plateNumber} ? Cette action est irréversible.`
+    );
+    if (confirmed) {
+      dispatch(deleteVehicle(vehicle.id));
+    }
+  };
+
   return (
     <div className="flex h-screen flex-col bg-ink">
       <header className="flex items-center justify-between border-b border-border px-6 py-3">
@@ -86,10 +139,17 @@ const DashboardPage = () => {
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-surface">
-          <div className="border-b border-border px-4 py-3">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h2 className="font-display text-sm font-semibold text-text">
               Véhicules {vehicles.length > 0 && <span className="text-text-muted">({vehicles.length})</span>}
             </h2>
+            <button
+              onClick={openCreateModal}
+              className="flex items-center gap-1 rounded-md bg-amber px-2.5 py-1.5 text-xs font-semibold text-ink hover:bg-amber/90"
+            >
+              <Plus size={14} />
+              Nouveau
+            </button>
           </div>
           {status === 'loading' && vehicles.length === 0 ? (
             <div className="px-4 py-8 text-center text-sm text-text-muted">Chargement…</div>
@@ -98,6 +158,8 @@ const DashboardPage = () => {
               vehicles={vehicles}
               selectedVehicleId={selectedVehicleId}
               onSelect={(id) => dispatch(selectVehicle(id))}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
             />
           )}
         </aside>
@@ -110,6 +172,17 @@ const DashboardPage = () => {
           />
         </main>
       </div>
+
+      {modal && (
+        <VehicleFormModal
+          mode={modal.mode}
+          initialVehicle={modal.vehicle}
+          isSubmitting={isSubmitting}
+          errorMessage={mutationError}
+          onSubmit={handleFormSubmit}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 };

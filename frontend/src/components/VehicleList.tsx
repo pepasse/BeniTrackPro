@@ -1,9 +1,12 @@
+import { Pencil, Trash2 } from 'lucide-react';
 import type { Vehicle } from '../store/vehiclesSlice';
 
 interface VehicleListProps {
   vehicles: Vehicle[];
   selectedVehicleId: string | null;
   onSelect: (id: string) => void;
+  onEdit: (vehicle: Vehicle) => void;
+  onDelete: (vehicle: Vehicle) => void;
 }
 
 const statusLabel: Record<Vehicle['status'], string> = {
@@ -29,7 +32,7 @@ const formatLastSeen = (iso?: string): string => {
   return `il y a ${Math.round(diffH / 24)} j`;
 };
 
-const VehicleList = ({ vehicles, selectedVehicleId, onSelect }: VehicleListProps) => {
+const VehicleList = ({ vehicles, selectedVehicleId, onSelect, onEdit, onDelete }: VehicleListProps) => {
   if (vehicles.length === 0) {
     return (
       <div className="px-4 py-8 text-center text-sm text-text-muted">
@@ -43,14 +46,9 @@ const VehicleList = ({ vehicles, selectedVehicleId, onSelect }: VehicleListProps
       {vehicles.map((vehicle) => {
         const isSelected = vehicle.id === selectedVehicleId;
         return (
-          <li key={vehicle.id}>
-            <button
-              onClick={() => onSelect(vehicle.id)}
-              className={`w-full px-4 py-3 text-left transition-colors ${
-                isSelected ? 'bg-surface-raised' : 'hover:bg-surface-raised/60'
-              }`}
-            >
-              <div className="flex items-center justify-between">
+          <li key={vehicle.id} className={`group relative ${isSelected ? 'bg-surface-raised' : 'hover:bg-surface-raised/60'}`}>
+            <button onClick={() => onSelect(vehicle.id)} className="w-full px-4 py-3 text-left">
+              <div className="flex items-center justify-between pr-14">
                 <span className="font-mono text-sm font-medium text-text">
                   {vehicle.plateNumber}
                 </span>
@@ -70,6 +68,23 @@ const VehicleList = ({ vehicles, selectedVehicleId, onSelect }: VehicleListProps
                 )}
               </div>
             </button>
+
+            <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <button
+                onClick={() => onEdit(vehicle)}
+                className="rounded p-1 text-text-muted hover:bg-surface hover:text-text"
+                aria-label="Modifier"
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                onClick={() => onDelete(vehicle)}
+                className="rounded p-1 text-text-muted hover:bg-surface hover:text-danger"
+                aria-label="Supprimer"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
           </li>
         );
       })}
