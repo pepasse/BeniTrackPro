@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, ArrowUpRight } from 'lucide-react';
 import type { Vehicle } from '../store/vehiclesSlice';
 
 interface VehicleListProps {
@@ -7,6 +7,7 @@ interface VehicleListProps {
   onSelect: (id: string) => void;
   onEdit: (vehicle: Vehicle) => void;
   onDelete: (vehicle: Vehicle) => void;
+  onOpenDetail: (vehicle: Vehicle) => void;
 }
 
 const statusLabel: Record<Vehicle['status'], string> = {
@@ -32,7 +33,14 @@ const formatLastSeen = (iso?: string): string => {
   return `il y a ${Math.round(diffH / 24)} j`;
 };
 
-const VehicleList = ({ vehicles, selectedVehicleId, onSelect, onEdit, onDelete }: VehicleListProps) => {
+const VehicleList = ({
+  vehicles,
+  selectedVehicleId,
+  onSelect,
+  onEdit,
+  onDelete,
+  onOpenDetail,
+}: VehicleListProps) => {
   if (vehicles.length === 0) {
     return (
       <div className="px-4 py-8 text-center text-sm text-text-muted">
@@ -48,7 +56,7 @@ const VehicleList = ({ vehicles, selectedVehicleId, onSelect, onEdit, onDelete }
         return (
           <li key={vehicle.id} className={`group relative ${isSelected ? 'bg-surface-raised' : 'hover:bg-surface-raised/60'}`}>
             <button onClick={() => onSelect(vehicle.id)} className="w-full px-4 py-3 text-left">
-              <div className="flex items-center justify-between pr-14">
+              <div className="flex items-center justify-between pr-20">
                 <span className="font-mono text-sm font-medium text-text">
                   {vehicle.plateNumber}
                 </span>
@@ -70,6 +78,13 @@ const VehicleList = ({ vehicles, selectedVehicleId, onSelect, onEdit, onDelete }
             </button>
 
             <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <button
+                onClick={() => onOpenDetail(vehicle)}
+                className="rounded p-1 text-text-muted hover:bg-surface hover:text-signal"
+                aria-label="Voir les détails"
+              >
+                <ArrowUpRight size={14} />
+              </button>
               <button
                 onClick={() => onEdit(vehicle)}
                 className="rounded p-1 text-text-muted hover:bg-surface hover:text-text"

@@ -1917,3 +1917,46 @@
 {"level":"info","message":"Redis client connected","service":"benitrackpro","timestamp":"2026-09-13 09:29:19"}
 {"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-09-13 21:45:01"}
 {"level":"info","message":"vehicle_positions configurée comme hypertable TimescaleDB","service":"benitrackpro","timestamp":"2026-09-13 21:45:01"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 21:45:02"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 21:45:04"}
+{"level":"info","message":"Client connecté via Socket.io: wf7O_fvfew1pNnl9AAAB","service":"benitrackpro","timestamp":"2026-09-13 21:45:04"}
+{"level":"info","message":"POST /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 21:46:37"}
+{"level":"info","message":"DELETE /api/vehicles/9a3c4558-dc57-45cf-8e16-377939e4de78","service":"benitrackpro","timestamp":"2026-09-13 21:47:23"}
+{"level":"info","message":"Client déconnecté: wf7O_fvfew1pNnl9AAAB","service":"benitrackpro","timestamp":"2026-09-13 21:50:49"}
+{"level":"info","message":"Client connecté via Socket.io: NWwJvQOaKhRmsCuCAAAD","service":"benitrackpro","timestamp":"2026-09-13 22:00:37"}
+{"level":"info","message":"Client déconnecté: NWwJvQOaKhRmsCuCAAAD","service":"benitrackpro","timestamp":"2026-09-13 22:00:39"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:00:40"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:00:41"}
+{"level":"info","message":"Client connecté via Socket.io: lhNiOV4xosFMsZXZAAAF","service":"benitrackpro","timestamp":"2026-09-13 22:00:41"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-09-13 22:02:11"}
+{"level":"info","message":"vehicle_positions configurée comme hypertable TimescaleDB","service":"benitrackpro","timestamp":"2026-09-13 22:02:11"}
+{"level":"info","message":"Client déconnecté: lhNiOV4xosFMsZXZAAAF","service":"benitrackpro","timestamp":"2026-09-13 22:02:27"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:02:30"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:02:31"}
+{"level":"info","message":"Client connecté via Socket.io: ZxpJYUnIx6NBt3dtAAAH","service":"benitrackpro","timestamp":"2026-09-13 22:02:31"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription","service":"benitrackpro","timestamp":"2026-09-13 22:03:43"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription/payments","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/stats?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/history?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z&limit=1000","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription/payments","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/stats?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/history?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z&limit=1000","service":"benitrackpro","timestamp":"2026-09-13 22:03:44"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:04:28"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:04:28"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription/payments","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/stats?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/history?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z&limit=1000","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription/payments","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/subscription","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/stats?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles/bc5be999-0034-4a61-91c7-11b5f8bb6074/history?from=2026-09-06T00:00:00.000Z&to=2026-09-13T22:59:59.000Z&limit=1000","service":"benitrackpro","timestamp":"2026-09-13 22:04:36"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:04:56"}
+{"level":"info","message":"GET /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:04:57"}
+{"level":"info","message":"POST /api/vehicles","service":"benitrackpro","timestamp":"2026-09-13 22:05:56"}
+{"level":"info","message":"Database connection established successfully","service":"benitrackpro","timestamp":"2026-09-13 22:09:04"}
+{"level":"info","message":"vehicle_positions configurée comme hypertable TimescaleDB","service":"benitrackpro","timestamp":"2026-09-13 22:09:04"}
+{"level":"info","message":"Client déconnecté: ZxpJYUnIx6NBt3dtAAAH","service":"benitrackpro","timestamp":"2026-09-13 22:09:09"}
+{"level":"info","message":"Client connecté via Socket.io: AnQZ2OB57sEp0ZVXAAAJ","service":"benitrackpro","timestamp":"2026-09-13 22:12:07"}
+{"level":"info","message":"Client déconnecté: AnQZ2OB57sEp0ZVXAAAJ","service":"benitrackpro","timestamp":"2026-09-13 22:12:33"}

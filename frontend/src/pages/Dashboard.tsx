@@ -160,6 +160,7 @@ const DashboardPage = () => {
               onSelect={(id) => dispatch(selectVehicle(id))}
               onEdit={openEditModal}
               onDelete={handleDelete}
+              onOpenDetail={(vehicle) => navigate(`/vehicles/${vehicle.id}`)}
             />
           )}
         </aside>
