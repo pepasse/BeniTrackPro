@@ -115,6 +115,12 @@ const DashboardPage = () => {
       <header className="flex items-center justify-between border-b border-border px-6 py-3">
         <span className="font-display text-lg font-semibold text-text">BeniTrackPro</span>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate('/geofences')}
+            className="text-sm text-text-muted hover:text-text"
+          >
+            Géofencing
+          </button>
           <span className="text-sm text-text-muted">{user?.fullName}</span>
           <button
             onClick={handleLogout}
