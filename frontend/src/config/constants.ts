@@ -16,6 +16,10 @@ export const API_ENDPOINTS = {
     STATS: (id: string) => `/api/vehicles/${id}/stats`,
     SUBSCRIPTION: (id: string) => `/api/vehicles/${id}/subscription`,
     SUBSCRIPTION_RENEW: (id: string) => `/api/vehicles/${id}/subscription/renew`,
+    DEVICES: (id: string) => `/api/vehicles/${id}/devices`,
+  },
+  DEVICES: {
+    DELETE: (deviceId: string) => `/api/devices/${deviceId}`,
   },
   GEOFENCES: {
     GET_ALL: '/api/geofences',

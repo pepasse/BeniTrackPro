@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../config/constants';
 import { useAppSelector } from '../store/hooks';
 import TripHistoryMap from '../components/TripHistoryMap';
 import RenewSubscriptionModal from '../components/RenewSubscriptionModal';
+import DeviceKeysCard from '../components/DeviceKeysCard';
 import type { Vehicle } from '../store/vehiclesSlice';
 
 interface Subscription {
@@ -268,6 +269,9 @@ const VehicleDetailPage = () => {
               <p className="mt-4 text-sm text-text-muted">Chargement…</p>
             )}
           </div>
+
+          {/* Balises GPS / clés API */}
+          <DeviceKeysCard vehicleId={vehicle.id} />
         </div>
 
         {/* Carte d'historique */}
