@@ -20,10 +20,15 @@ import {
   unsubscribeFromVehicle,
   type VehicleLocationEvent,
   type SubscriptionWarningEvent,
+  type GeofenceAlertEvent,
 } from '../services/socket';
 import VehicleList from '../components/VehicleList';
 import VehicleMap from '../components/VehicleMap';
 import VehicleFormModal from '../components/VehicleFormModal';
+import GeofenceAlertStack, { type GeofenceToast } from '../components/GeofenceAlertStack';
+
+const ALERT_AUTO_DISMISS_MS = 8000;
+const MAX_VISIBLE_ALERTS = 5;
 
 const DashboardPage = () => {
   const dispatch = useAppDispatch();
@@ -34,6 +39,7 @@ const DashboardPage = () => {
   );
 
   const [warning, setWarning] = useState<SubscriptionWarningEvent | null>(null);
+  const [alerts, setAlerts] = useState<GeofenceToast[]>([]);
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; vehicle?: Vehicle } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,9 +47,13 @@ const DashboardPage = () => {
     dispatch(fetchVehicles());
   }, [dispatch]);
 
+  const dismissAlert = (toastId: string) => {
+    setAlerts((prev) => prev.filter((a) => a.toastId !== toastId));
+  };
+
   // Abonne le socket à chaque véhicule de la flotte dès qu'elle est chargée,
-  // pour recevoir la position de tous les véhicules en temps réel — pas
-  // seulement celui actuellement sélectionné dans la liste.
+  // pour recevoir la position — et les alertes de géofencing — de tous les
+  // véhicules en temps réel, pas seulement celui sélectionné dans la liste.
   useEffect(() => {
     if (vehicles.length === 0) return;
 
@@ -56,14 +66,24 @@ const DashboardPage = () => {
     const handleWarning = (payload: SubscriptionWarningEvent) => {
       setWarning(payload);
     };
+    const handleGeofenceAlert = (payload: GeofenceAlertEvent) => {
+      console.log('[geofence:alert reçu]', payload);
+      const vehiclePlate = vehicles.find((v) => v.id === payload.vehicleId)?.plateNumber ?? '—';
+      const toastId = `${payload.geofenceId}-${payload.vehicleId}-${payload.occurredAt}`;
+
+      setAlerts((prev) => [{ ...payload, toastId, vehiclePlate }, ...prev].slice(0, MAX_VISIBLE_ALERTS));
+      setTimeout(() => dismissAlert(toastId), ALERT_AUTO_DISMISS_MS);
+    };
 
     socket.on('vehicle:location', handleLocation);
     socket.on('subscription:warning', handleWarning);
+    socket.on('geofence:alert', handleGeofenceAlert);
 
     return () => {
       vehicles.forEach((vehicle) => unsubscribeFromVehicle(vehicle.id));
       socket.off('vehicle:location', handleLocation);
       socket.off('subscription:warning', handleWarning);
+      socket.off('geofence:alert', handleGeofenceAlert);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vehicles.map((v) => v.id).join(',')]);
@@ -142,6 +162,8 @@ const DashboardPage = () => {
           </button>
         </div>
       )}
+
+      <GeofenceAlertStack alerts={alerts} onDismiss={dismissAlert} />
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-surface">
