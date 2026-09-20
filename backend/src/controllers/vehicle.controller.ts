@@ -2,8 +2,11 @@ import { Request, Response } from 'express';
 import { getConnection } from '../config/database';
 import { Vehicle } from '../entities/Vehicle';
 import { VehiclePosition } from '../entities/VehiclePosition';
-import { emitVehicleLocation } from '../config/socket';
-import { checkGeofences } from '../services/geofence.service';
+import {
+  recordVehiclePosition,
+  PositionValidationError,
+  VehicleNotFoundError,
+} from '../services/position.service';
 import { createInitialSubscription, checkExpirationWarning } from '../services/subscription.service';
 import logger from '../config/logger';
 
@@ -98,64 +101,19 @@ export const deleteVehicle = async (req: Request, res: Response): Promise<void> 
 export const ingestVehicleLocation = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { latitude, longitude, speedKmh, heading, recordedAt } = req.body;
-
-    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
-      res.status(400).json({ message: 'latitude et longitude (numériques) sont requis' });
-      return;
-    }
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-      res.status(400).json({ message: 'latitude ou longitude hors des bornes valides' });
-      return;
-    }
-
-    const vRepo = vehicleRepository();
-    const vehicle = await vRepo.findOneBy({ id });
-    if (!vehicle) {
-      res.status(404).json({ message: 'Véhicule introuvable' });
-      return;
-    }
-
-    const timestamp = recordedAt ? new Date(recordedAt) : new Date();
-
-    // Historique (TimescaleDB)
-    const position = positionRepository().create({
-      vehicleId: id,
-      latitude,
-      longitude,
-      speedKmh,
-      heading,
-      recordedAt: timestamp,
-    });
-    await positionRepository().save(position);
-
-    // Dernière position connue (accès rapide, pas de scan de l'historique)
-    vehicle.lastLatitude = latitude;
-    vehicle.lastLongitude = longitude;
-    vehicle.lastSpeedKmh = speedKmh;
-    vehicle.lastLocationAt = timestamp;
-    await vRepo.save(vehicle);
-
-    // Diffusion en temps réel aux clients abonnés à ce véhicule
-    emitVehicleLocation(id, {
-      vehicleId: id,
-      latitude,
-      longitude,
-      speedKmh,
-      heading,
-      recordedAt: timestamp,
-    });
-
-    // Vérifie si cette position déclenche une entrée/sortie de géofence
-    // (asynchrone, ne bloque pas la réponse HTTP)
-    checkGeofences(id, { latitude, longitude }).catch((err) =>
-      logger.error('checkGeofences a échoué:', err)
-    );
-
+    const position = await recordVehiclePosition(id, req.body);
     res.status(201).json(position);
   } catch (error) {
+    if (error instanceof PositionValidationError) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+    if (error instanceof VehicleNotFoundError) {
+      res.status(404).json({ message: error.message });
+      return;
+    }
     logger.error("Erreur lors de l'ingestion de la position GPS:", error);
-    res.status(500).json({ message: 'Impossible d\'enregistrer la position' });
+    res.status(500).json({ message: "Impossible d'enregistrer la position" });
   }
 };
 

@@ -8,6 +8,7 @@ import vehicleRoutes from './routes/vehicle.routes';
 import authRoutes from './routes/auth.routes';
 import geofenceRoutes from './routes/geofence.routes';
 import fleetRoutes from './routes/fleet.routes';
+import deviceRoutes from './routes/device.routes';
 
 const app: Application = express();
 
@@ -54,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/geofences', geofenceRoutes);
 app.use('/api/fleet', fleetRoutes);
+app.use('/api/devices', deviceRoutes);
 // app.use('/api/alerts', alertRoutes);
 
 // 404

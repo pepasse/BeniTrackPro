@@ -15,6 +15,7 @@ import {
   getVehiclePaymentHistory,
 } from '../controllers/subscription.controller';
 import { getVehicleStatsController } from '../controllers/fleet.controller';
+import { createDeviceKey, listDeviceKeys } from '../controllers/device.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { requireActiveSubscription } from '../middleware/subscription.middleware';
 
@@ -43,5 +44,9 @@ router.get('/:id/subscription/payments', getVehiclePaymentHistory);
 
 // Statistiques (distance parcourue, consommation estimée)
 router.get('/:id/stats', getVehicleStatsController);
+
+// Clés API pour les balises GPS (une balise = une clé, scopée à ce véhicule)
+router.post('/:id/devices', createDeviceKey);
+router.get('/:id/devices', listDeviceKeys);
 
 export default router;
