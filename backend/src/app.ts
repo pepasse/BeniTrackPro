@@ -9,11 +9,18 @@ import authRoutes from './routes/auth.routes';
 import geofenceRoutes from './routes/geofence.routes';
 import fleetRoutes from './routes/fleet.routes';
 import deviceRoutes from './routes/device.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 const app: Application = express();
 
 // Sécurité de base
-app.use(helmet());
+// Helmet, sauf CSP sur la doc Swagger (qui utilise des scripts inline)
+const helmetDefault = helmet();
+const helmetDocs = helmet({ contentSecurityPolicy: false });
+app.use((req, res, next) =>
+  req.path.startsWith('/api/docs') ? helmetDocs(req, res, next) : helmetDefault(req, res, next)
+);
 app.use(
   cors({
     origin: config.cors.origin,
@@ -48,6 +55,12 @@ app.get('/api/health', (_req: Request, res: Response) => {
     service: 'benitrackpro-backend',
     timestamp: new Date().toISOString(),
   });
+});
+
+// Documentation Swagger
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { customSiteTitle: 'BeniTrackPro API' }));
+app.get('/api/docs.json', (_req: Request, res: Response) => {
+  res.json(swaggerSpec);
 });
 
 // Routes API
