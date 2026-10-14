@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View,
+  ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, Vibration, View,
 } from 'react-native';
 import MapWebView, { MapFocus } from './MapWebView';
+import AlertBanners, { GeofenceAlert } from './AlertBanners';
 import { apiGet, SessionExpiredError, Vehicle } from './api';
 import { closeSocket, getSocket } from './socket';
 import { colors } from './theme';
@@ -22,6 +23,14 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
   const [error, setError] = useState('');
   const [view, setView] = useState<'map' | 'list'>('map');
   const [mapFocus, setMapFocus] = useState<MapFocus | null>(null);
+  const [alerts, setAlerts] = useState<GeofenceAlert[]>([]);
+  const vehiclesRef = useRef<Vehicle[]>([]);
+  vehiclesRef.current = vehicles;
+
+  const dismissAlert = useCallback(
+    (id: string) => setAlerts((list) => list.filter((a) => a.toastId !== id)),
+    []
+  );
 
   const load = useCallback(async () => {
     try {
@@ -70,6 +79,34 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
     };
   }, [ids]);
 
+  // Alertes de géofence (entrée / sortie de zone)
+  useEffect(() => {
+    const socket = getSocket();
+    const join = () => socket.emit('subscribe:alerts');
+    const onAlert = (e: {
+      vehicleId: string;
+      geofenceName: string;
+      eventType: 'enter' | 'exit';
+      occurredAt: string;
+    }) => {
+      const plate = vehiclesRef.current.find((v) => v.id === e.vehicleId)?.plateNumber ?? 'Véhicule';
+      const toastId = `${e.vehicleId}-${e.occurredAt}-${Math.random().toString(36).slice(2, 6)}`;
+      setAlerts((list) => [
+        { toastId, vehiclePlate: plate, geofenceName: e.geofenceName, eventType: e.eventType, occurredAt: e.occurredAt },
+        ...list,
+      ].slice(0, 4));
+      Vibration.vibrate(400);
+      setTimeout(() => dismissAlert(toastId), 8000);
+    };
+    socket.on('connect', join);
+    socket.on('geofence:alert', onAlert);
+    if (socket.connected) join();
+    return () => {
+      socket.off('connect', join);
+      socket.off('geofence:alert', onAlert);
+    };
+  }, [dismissAlert]);
+
   useEffect(() => () => closeSocket(), []);
 
   const focus = (v: Vehicle) => {
@@ -105,6 +142,7 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
       </View>
 
       {!!error && <Text style={s.error}>{error}</Text>}
+      <AlertBanners alerts={alerts} onDismiss={dismissAlert} />
 
       {view === 'map' ? (
         <MapWebView
