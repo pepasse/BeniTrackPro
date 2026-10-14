@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapWebView, { MapFocus } from './MapWebView';
 import { apiGet, SessionExpiredError, Vehicle } from './api';
 import { closeSocket, getSocket } from './socket';
 import { colors } from './theme';
@@ -15,16 +15,13 @@ interface LocationEvent {
   recordedAt: string;
 }
 
-const DOUALA = { latitude: 4.0511, longitude: 9.7679, latitudeDelta: 0.2, longitudeDelta: 0.2 };
-
 export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [view, setView] = useState<'map' | 'list'>('map');
-  const [selected, setSelected] = useState<string | null>(null);
-  const mapRef = useRef<MapView>(null);
+  const [mapFocus, setMapFocus] = useState<MapFocus | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -77,16 +74,8 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
 
   const focus = (v: Vehicle) => {
     if (v.lastLatitude == null || v.lastLongitude == null) return;
-    setSelected(v.id);
     setView('map');
-    setTimeout(
-      () =>
-        mapRef.current?.animateToRegion(
-          { latitude: v.lastLatitude!, longitude: v.lastLongitude!, latitudeDelta: 0.01, longitudeDelta: 0.01 },
-          500
-        ),
-      100
-    );
+    setMapFocus({ latitude: v.lastLatitude, longitude: v.lastLongitude, key: Date.now() });
   };
 
   const located = vehicles.filter((v) => v.lastLatitude != null && v.lastLongitude != null);
@@ -118,18 +107,16 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
       {!!error && <Text style={s.error}>{error}</Text>}
 
       {view === 'map' ? (
-        <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={DOUALA}>
-          {located.map((v) => (
-            <Marker
-              key={v.id}
-              coordinate={{ latitude: v.lastLatitude!, longitude: v.lastLongitude! }}
-              title={v.plateNumber}
-              description={`${v.brand} ${v.model}${v.lastSpeedKmh != null ? ` · ${Math.round(v.lastSpeedKmh)} km/h` : ''}`}
-              pinColor={v.status === 'active' ? colors.signal : colors.muted}
-              opacity={selected && selected !== v.id ? 0.6 : 1}
-            />
-          ))}
-        </MapView>
+        <MapWebView
+          focus={mapFocus}
+          markers={located.map((v) => ({
+            id: v.id,
+            latitude: v.lastLatitude!,
+            longitude: v.lastLongitude!,
+            label: `${v.plateNumber} · ${v.brand} ${v.model}${v.lastSpeedKmh != null ? ` · ${Math.round(v.lastSpeedKmh)} km/h` : ''}`,
+            active: v.status === 'active',
+          }))}
+        />
       ) : (
         <FlatList
           data={vehicles}
