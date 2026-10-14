@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import MapWebView, { MapFocus } from './MapWebView';
 import AlertBanners, { GeofenceAlert } from './AlertBanners';
+import VehicleDetailScreen from './VehicleDetailScreen';
 import { apiGet, SessionExpiredError, Vehicle } from './api';
 import { closeSocket, getSocket } from './socket';
 import { colors } from './theme';
@@ -23,6 +24,8 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
   const [error, setError] = useState('');
   const [view, setView] = useState<'map' | 'list'>('map');
   const [mapFocus, setMapFocus] = useState<MapFocus | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const closeDetail = useCallback(() => setDetailId(null), []);
   const [alerts, setAlerts] = useState<GeofenceAlert[]>([]);
   const vehiclesRef = useRef<Vehicle[]>([]);
   vehiclesRef.current = vehicles;
@@ -117,6 +120,16 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
 
   const located = vehicles.filter((v) => v.lastLatitude != null && v.lastLongitude != null);
 
+  const detailVehicle = detailId ? vehicles.find((v) => v.id === detailId) : undefined;
+  if (detailVehicle) {
+    return (
+      <>
+        <VehicleDetailScreen vehicle={detailVehicle} onBack={closeDetail} onLogout={onLogout} />
+        <AlertBanners alerts={alerts} onDismiss={dismissAlert} />
+      </>
+    );
+  }
+
   if (loading) {
     return (
       <View style={[s.root, s.center]}>
@@ -166,7 +179,7 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
           }
           ListEmptyComponent={<Text style={s.empty}>Aucun véhicule.</Text>}
           renderItem={({ item }) => (
-            <Pressable style={s.card} onPress={() => focus(item)}>
+            <Pressable style={s.card} onPress={() => setDetailId(item.id)}>
               <View style={{ flex: 1 }}>
                 <Text style={s.plate}>{item.plateNumber}</Text>
                 <Text style={s.meta}>{item.brand} {item.model}</Text>
@@ -177,6 +190,11 @@ export default function VehiclesScreen({ onLogout }: { onLogout: () => void }) {
                   </Text>
                 )}
               </View>
+              {item.lastLatitude != null && (
+                <Pressable onPress={() => focus(item)} hitSlop={8} style={s.locate}>
+                  <Text style={s.locateText}>Carte</Text>
+                </Pressable>
+              )}
               <View style={[s.dot, { backgroundColor: item.status === 'active' ? colors.signal : colors.muted }]} />
             </Pressable>
           )}
@@ -205,4 +223,6 @@ const s = StyleSheet.create({
   plate: { color: colors.text, fontSize: 16, fontWeight: '700' },
   meta: { color: colors.muted, marginTop: 2, fontSize: 13 },
   dot: { width: 12, height: 12, borderRadius: 6, marginLeft: 12 },
+  locate: { borderWidth: 1, borderColor: colors.border, borderRadius: 6, paddingVertical: 4, paddingHorizontal: 8 },
+  locateText: { color: colors.amber, fontSize: 12, fontWeight: '600' },
 });
